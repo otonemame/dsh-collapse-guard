@@ -2,6 +2,10 @@
 
 > 模型吐着吐着开始「好。写。发。好。写。发。」刷屏的时候，把这个流掐掉。
 
+仓库名 `dsh-collapse-guard`，npm 包名 `doudou-collapse-guard`（本地开发时挂在 `@local/doudou-collapse-guard`）。装的时候认包名，搜的时候认仓库名，两个指同一个东西。
+
+**兼容性**：`dsh >= 0.2.1`，`node >= 20`。上限没锁 —— 0.3 的破坏性变更（如果 `llm/stream` 的签名或 `finish` 的语义变了）不是声明里能挡住的，装 0.3 之后先看 `fires.jsonl` 有没有正常记录，再决定要不要留。
+
 一个 DeepSeek Harness 插件。挂在 `llm/stream` 瀑布上包住上游 chunk 流，扫最近一百多行，发现退化成重复碎念就断流，补一个 terminal `finish(error)`，让这一步以「provider 报错」的样子收场。
 
 **它管什么、不管什么**
@@ -23,7 +27,7 @@
 
 这个码**刻意不在 `dsh-llm-retry` 的默认重试集里**（默认只有 `EMPTY_RESPONSE / RATE_LIMIT / SERVER / TIMEOUT / TRANSPORT`）：塌缩是请求本身的属性，重试等于把整个 prompt 再烧一遍。
 
-## 三种形态
+## 六种形态
 
 | 规则码 | 抓的是什么 |
 |---|---|
@@ -31,10 +35,10 @@
 | `short-line-dominant` | 整窗（128 行）里不同短句 ≤ 4 种 |
 | `short-line-cycle` | 5–12 种短句按固定周期原样绕圈（Write / Execute / Run / Test / Done） |
 | `short-line-spread` | 种数更多、但最多那种占一半以上（偏斜型轮转） |
-| `paragraph-repeat` | 同一条长行**连着**复读 ≥ 3 次（累计不算，免得误杀时政稿里重复引用的同一句话） |
+| `paragraph-repeat` | 滚动原文里同一段**连着**重复 ≥ 3 次（累计不算，免得误杀时政稿里重复引用的同一句话） |
 | `hard-cap` | 单个通道超过 `hardChars`（默认 200000）还在继续 |
 
-不换行的复读（`switch switch switch` 这种中间没有 `\n` 的）会被按标点/空格切成短行，照样进短句判据。
+段落复读**不看分行**。模型是一个字一个字吐的，整段复读往往一个换行都没有，凑不齐一行 —— 所以另开了一段 4096 字符的滚动原文，在里面找「连着重复三遍的周期串」（段长 8–400 字），每涨 48 字符扫一次。不换行的 `switch switch switch` 也走这条路。
 
 围栏（` ``` `）内的内容不参与判定；超过 `skipLineChars`（默认 2000）的长行跳过且不清窗。
 

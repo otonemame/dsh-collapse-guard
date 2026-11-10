@@ -27,10 +27,14 @@
 
 | 规则码 | 抓的是什么 |
 |---|---|
-| `short-line-dominant` | 尾窗（128 行）里不同短句 ≤ 4 种，且最多那种出现 ≥ 4 次 |
-| `short-line-tight` | 紧窗口（48 行）里不同短句 ≤ 2 种 —— 买的是提前量 |
-| `paragraph-repeat` | 整段长内容被原样复读（≥ 3 次） |
+| `short-line-tight` | **最近** 48 行里不同短句 ≤ 2 种 —— 买的是提前量 |
+| `short-line-dominant` | 整窗（128 行）里不同短句 ≤ 4 种 |
+| `short-line-cycle` | 5–12 种短句按固定周期原样绕圈（Write / Execute / Run / Test / Done） |
+| `short-line-spread` | 种数更多、但最多那种占一半以上（偏斜型轮转） |
+| `paragraph-repeat` | 同一条长行**连着**复读 ≥ 3 次（累计不算，免得误杀时政稿里重复引用的同一句话） |
 | `hard-cap` | 单个通道超过 `hardChars`（默认 200000）还在继续 |
+
+不换行的复读（`switch switch switch` 这种中间没有 `\n` 的）会被按标点/空格切成短行，照样进短句判据。
 
 围栏（` ``` `）内的内容不参与判定；超过 `skipLineChars`（默认 2000）的长行跳过且不清窗。
 
@@ -60,6 +64,9 @@
 |---|---|---|
 | `window` | 128 | 主判据窗口行数。**这是拐点**：64 行误报多，192 行召回掉到 53.7% |
 | `distinctMax` | 4 | 主判据允许的不同短句种数 |
+| `distinctSpreadMax` | 8 | 放宽档：种数到这么多也报（要配合周期或占比） |
+| `distinctSpreadShare` | 0.5 | 放宽档要求「最多那种」占全部短句的比例 |
+| `fenceMaxLines` | 200 | 围栏看门狗：开着这么多行还没闭合，就当它没打开 |
 | `longTolerance` | 6 | 窗口内允许混几条长行 |
 | `tightWindow` | 48 | 紧判据窗口 |
 | `tightDistinctMax` | 2 | 紧判据允许的不同短句种数 |
@@ -91,7 +98,6 @@ DOUDOU_COLLAPSE_GUARD_CONFIG={"watch":["reasoning-delta"]}
 
 ## 已知边界
 
-- **围栏不闭合就全瞎**：模型吐了半个代码块再开始复读，围栏状态卡在「代码里」，整个守卫看不见。这个还没修。
 - 段落复读的日志 `tail` 里长行会显示成 `<长行>` 占位符，看不出具体在复读哪一段。
 - 只读流，不改判据之外的任何东西，不碰历史，不碰会话文件。
 

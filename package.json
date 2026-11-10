@@ -1,0 +1,49 @@
+{
+  "name": "doudou-collapse-guard",
+  "version": "0.1.0",
+  "description": "Abort a collapsing LLM stream: watch the waterfall, trip on repeated short lines, end the step as a provider failure so the garbage never reaches the model's visible history.",
+  "type": "module",
+  "main": "index.js",
+  "exports": {
+    ".": "./index.js",
+    "./locale/*.json": "./locale/*.json",
+    "./icon": "./icon.svg"
+  },
+  "files": [
+    "index.js",
+    "lib/",
+    "locale/",
+    "icon.svg",
+    "cordis.patch.yml",
+    "README.md",
+    "LICENSE"
+  ],
+  "license": "MIT",
+  "author": "otonemame",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/otonemame/dsh-collapse-guard.git"
+  },
+  "homepage": "https://github.com/otonemame/dsh-collapse-guard#readme",
+  "bugs": {
+    "url": "https://github.com/otonemame/dsh-collapse-guard/issues"
+  },
+  "keywords": [
+    "dsh",
+    "dsh-plugin",
+    "deepseek-harness",
+    "llm",
+    "streaming",
+    "guard",
+    "decoder-collapse"
+  ],
+  "dsh": {
+    "bundle": {
+      "patch": "./cordis.patch.yml"
+    }
+  },
+  "engines": {
+    "node": ">=20",
+    "dsh": ">=0.2.1 <0.3.0"
+  }
+}

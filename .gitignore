@@ -1,0 +1,7 @@
+node_modules/
+fires.jsonl
+fires.jsonl.1
+off
+*.log
+.DS_Store
+Thumbs.db

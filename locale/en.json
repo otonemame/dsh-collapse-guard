@@ -1,0 +1,6 @@
+{
+  "meta": {
+    "title": "Jiangdoudou · Collapse Guard",
+    "description": "Watches the stream, cuts it when repetitive short lines take over, and ends the turn as an ordinary provider error so the garbage never enters history."
+  }
+}

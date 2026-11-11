@@ -21,7 +21,6 @@ import os from 'node:os'
 import path from 'node:path'
 import { DEFAULTS } from './lib/detect.js'
 import { FAILURE_CODE, guardStream } from './lib/guard.js'
-
 export const name = 'doudou-collapse-guard'
 
 /** 家里地址：显式 DSH_HOME 优先，其次 ~/.dsh（与 dsh-home-paths 的 resolveDshHome 同序）。 */
@@ -149,7 +148,10 @@ export function apply(ctx, patchConfig = {}) {
         log,
         (verdict, facts) => {
           if (config.journal !== false) record(buildEntry(verdict, facts, config))
-        }
+        },
+        // 重发通道：再走一遍下游。守卫只在下游「一个字都还没收到」时才用它，
+        // 所以这里不需要额外记账；attempt 次数由 guardStream 的 maxAttempts 兜住。
+        () => next()
       )
     },
     { global: true }

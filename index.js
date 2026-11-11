@@ -98,6 +98,8 @@ function buildEntry(verdict, facts, config) {
     ttftMs: facts.ttftMs,
     elapsedMs: facts.elapsedMs,
     chars: facts.chars,
+    attempt: facts.attempt ?? null,
+    released: facts.released ?? null,
     tail: String(facts.sample ?? '').slice(-240),
     thresholds: {
       minChars: config.minChars,
@@ -110,7 +112,9 @@ function buildEntry(verdict, facts, config) {
       tightLongTolerance: config.tightLongTolerance,
       longLineRepeat: config.longLineRepeat,
       skipLineChars: config.skipLineChars,
-      hardChars: config.hardChars
+      hardChars: config.hardChars,
+      holdChars: config.holdChars,
+      maxAttempts: config.maxAttempts
     }
   }
 }
